@@ -32,6 +32,7 @@ impl<'a> SplitFunctions for ArgMatches<'a> {
                 res = all_columns
                             .into_iter()
                             .map(|i| i.parse::<usize>().unwrap()) // ok to unwrap, has been verified by clap
+                            .map(|i| i - 1) // Ok to do -1 as clap verified > 0
                             .filter(|i| i < &all_splits.len())
                             .filter_map(|i| all_splits.get(i))
                             .map(ToOwned::to_owned)
@@ -45,8 +46,10 @@ impl<'a> SplitFunctions for ArgMatches<'a> {
 }
 
 fn validate_columns(v: String) -> Result<(), String> {
-    if v.parse::<usize>().is_ok() { return Ok(()); }
-    Err(String::from(format!("The value \"{}\" is not an integer", v)))
+    match v.parse::<usize>() {
+       Ok(val) if val > 0 => Ok(()),
+       _ => Err(String::from(format!("The value \"{}\" is not allowed", v)))
+    }
 }
 
 
@@ -69,7 +72,7 @@ fn main() -> Result<(), std::io::Error> {
                      .takes_value(true)
                      .value_delimiter(",")
                      .validator(validate_columns)
-                     .help("Extract given columns. Separate by commas. Starts counting with 0"))
+                     .help("Extract given columns. Separate by commas. Starts counting with 1"))
                  .arg(Arg::with_name("DELIMITER")
                      .required(false)
                      .help("Which Delimiter should be used to split. If no delimiter is given, all whitespaces are used"))
