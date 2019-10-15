@@ -56,7 +56,7 @@ fn main() -> Result<(), std::io::Error> {
                  .about("Split input strings and extract certain columns")
                  .arg(Arg::with_name("keep-empty")
                      .short("k")
-                     .help("Keep empty split-elements, if delimiter is repeated")
+                     .help("Keep empty split-elements, if delimiter is repeated. Ignored, if no Delimiter is given.")
                      .takes_value(false))
                  .arg(Arg::with_name("join-delimiter")
                      .short("j")
