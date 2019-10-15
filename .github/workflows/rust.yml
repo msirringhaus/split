@@ -1,0 +1,23 @@
+name: Rust
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    container:
+      image: opensuse/tumbleweed
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: install dependencies
+      run: zypper --non-interactive in rust cargo gcc
+    - name: build
+      run: cargo build --verbose
+    - name: build release
+      run: cargo build --verbose --release
+    - uses: actions/upload-artifact@master
+      with:
+        name: split
+        path: target/release/split
