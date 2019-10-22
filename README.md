@@ -11,6 +11,14 @@ It exists because `cut` can't remove empty columns and I'm too stupid to remembe
 $ echo "How did that awk-command work again?" | split -c 4
 awk-command
 
+# Default-joining with one whitespace
+echo "I'm................thinking" | split "."
+I'm thinking
+
+# Can rejoin with a different join-delimiter (which can be more than one char)
+$ echo "How did that awk-command work again?" | split -c 1,2,3,5,6 -j '==='
+How===did===that===work===again?
+
 # Can split multi-char delimiter
 $ echo "I was...like...thinking...like...how did you...like...come up with that?" | split -c 3,4 "...like..."
 how did you come up with that?
@@ -22,14 +30,6 @@ thinking
 # ..or not
 $ echo "I'm................thinking" | split -k -c 17 "."
 thinking
-
-# Default-joining with one whitespace
-echo "I'm................thinking" | split "."
-I'm thinking
-
-# Can rejoin with a different join-delimiter (which can be more than one char)
-$ echo "How did that awk-command work again?" | split -c 1,2,3,5,6 -j '==='
-How===did===that===work===again?
 
 # Has the ability to use negative indices
 $ echo "
