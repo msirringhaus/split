@@ -26,20 +26,39 @@ impl<'a> SplitFunctions for ArgMatches<'a> {
     }
 
     fn pick_columns<'b>(&self, all_splits: &'b [&str]) -> Vec<&'b str> {
-        let res;
+        let mut res;
         match self.values_of("column") {
             Some(all_columns) => {
-                res = all_columns
-                            .into_iter()
-                            .map(|i| i.parse::<i64>().unwrap()) // ok to unwrap, has been verified by clap
-                            .map(|i| if i > 0 { i - 1 } else { all_splits.len() as i64 + i }) // clap verified != 0
-                            .filter(|i| i < &(all_splits.len() as i64) && i >= &0)
-                            .filter_map(|i| all_splits.get(i as usize))
-                            .map(ToOwned::to_owned)
-                            .collect();
+                let mut filtered_columns : Vec<_> = all_columns
+                                                    .into_iter()
+                                                    .map(|i| i.parse::<i64>().unwrap()) // ok to unwrap, has been verified by clap
+                                                    .map(|i| if i > 0 { i - 1 } else { all_splits.len() as i64 + i }) // clap verified != 0
+                                                    .filter(|i| i < &(all_splits.len() as i64) && i >= &0)
+                                                    .collect();
+                if self.is_present("complement") {
+                    res = all_splits.to_owned();
+                    filtered_columns.sort();
+                    filtered_columns.dedup();
+                    for i in filtered_columns.into_iter().rev() {
+                        res.remove(i as usize);
+                    }
+                } else {
+                    res = filtered_columns
+                                .into_iter()
+                                .filter_map(|i| all_splits.get(i as usize))
+                                .map(ToOwned::to_owned)
+                                .collect();
+                }
             },
 
-            None => {res = all_splits.to_owned();},
+            None => {
+                if self.is_present("complement") {
+                    // Complement of "all" is "nothing"
+                    res = Vec::new();
+                } else {
+                    res = all_splits.to_owned();
+                }
+            }
         }
         res
     }
@@ -61,6 +80,10 @@ fn main() -> Result<(), std::io::Error> {
                      .long("keep-empty")
                      .short("k")
                      .help("Keep empty split-elements, if delimiter is repeated. Ignored, if no Delimiter is given.")
+                     .takes_value(false))
+                 .arg(Arg::with_name("complement")
+                     .long("complement")
+                     .help("Use the complement of the selected columns, meaning all columns except the specified ones.")
                      .takes_value(false))
                  .arg(Arg::with_name("join-delimiter")
                      .short("j")
