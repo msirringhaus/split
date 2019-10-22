@@ -64,7 +64,7 @@ fn main() -> Result<(), std::io::Error> {
                      .takes_value(false))
                  .arg(Arg::with_name("join-delimiter")
                      .short("j")
-                     .help("With which new delimiter the resulted split should be joined (if multiple indeces are picked")
+                     .help("With which new delimiter the resulted split should be joined (if multiple indices are picked")
                      .takes_value(true)
                      .default_value(" "))
                  .arg(Arg::with_name("column")

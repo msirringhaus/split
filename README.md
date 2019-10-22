@@ -23,6 +23,10 @@ thinking
 $ echo "I'm................thinking" | split -k -c 17 "."
 thinking
 
+# Default-joining with one whitespace
+echo "I'm................thinking" | split "."
+I'm thinking
+
 # Can rejoin with a different join-delimiter (which can be more than one char)
 $ echo "How did that awk-command work again?" | split -c 1,2,3,5,6 -j '==='
 How===did===that===work===again?
