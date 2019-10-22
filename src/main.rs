@@ -31,10 +31,10 @@ impl<'a> SplitFunctions for ArgMatches<'a> {
             Some(all_columns) => {
                 res = all_columns
                             .into_iter()
-                            .map(|i| i.parse::<usize>().unwrap()) // ok to unwrap, has been verified by clap
-                            .map(|i| i - 1) // Ok to do -1 as clap verified > 0
-                            .filter(|i| i < &all_splits.len())
-                            .filter_map(|i| all_splits.get(i))
+                            .map(|i| i.parse::<i64>().unwrap()) // ok to unwrap, has been verified by clap
+                            .map(|i| if i > 0 { i - 1 } else { all_splits.len() as i64 + i }) // clap verified != 0
+                            .filter(|i| i < &(all_splits.len() as i64) && i >= &0)
+                            .filter_map(|i| all_splits.get(i as usize))
                             .map(ToOwned::to_owned)
                             .collect();
             },
@@ -46,8 +46,8 @@ impl<'a> SplitFunctions for ArgMatches<'a> {
 }
 
 fn validate_columns(v: String) -> Result<(), String> {
-    match v.parse::<usize>() {
-       Ok(val) if val > 0 => Ok(()),
+    match v.parse::<i64>() {
+       Ok(val) if val != 0 => Ok(()),
        _ => Err(String::from(format!("The value \"{}\" is not allowed", v)))
     }
 }
@@ -72,7 +72,7 @@ fn main() -> Result<(), std::io::Error> {
                      .takes_value(true)
                      .value_delimiter(",")
                      .validator(validate_columns)
-                     .help("Extract given columns. Separate by commas. Starts counting with 1"))
+                     .help("Extract given columns. Separate by commas. Starts counting with 1. Negative values count from the back. For negative values, use the notation -c=\"-1\""))
                  .arg(Arg::with_name("DELIMITER")
                      .required(false)
                      .help("Which Delimiter should be used to split. If no delimiter is given, all whitespaces are used"))

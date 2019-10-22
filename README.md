@@ -27,6 +27,19 @@ thinking
 $ echo "How did that awk-command work again?" | split -c 1,2,3,5,6 -j '==='
 How===did===that===work===again?
 
+# Has the ability to use negative indices
+$ echo "
+Part1..................Something
+Part10.................Another
+Part100................Thing
+Part1000...............End
+" | split "." -j ": " -c 1,-1
+
+Part1: Something
+Part10: Another
+Part100: Thing
+Part1000: End
+
 # Respects requested order of fields
 $ echo "1 2 3 4 5 6" | cut -d " " -f 3,2,1
 1 2 3
