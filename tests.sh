@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 function abort() {
   echo "$@"
   exit 1
