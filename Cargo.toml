@@ -8,3 +8,7 @@ edition = "2018"
 
 [dependencies]
 clap = "*"
+
+[dev-dependencies]
+assert_cmd = "1.0.1"
+duct = "0.13.4"
