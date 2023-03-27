@@ -92,6 +92,21 @@ Part1000: End"
 }
 
 #[test]
+fn test_readme_example_multi_line_replace_and_switch() {
+    testcase!(
+        "Part1..................Something
+Part10.................Another
+Part100................Thing
+Part1000...............End",
+        vec![".", "-j", ": ", "-c=-1,1"],
+        "Something: Part1
+Another: Part10
+Thing: Part100
+End: Part1000"
+    );
+}
+
+#[test]
 fn test_readme_example_change_order_with_id() {
     testcase!("1 2 3 4 5 6", vec!["-c", "3,2,1"], "3 2 1");
 }
